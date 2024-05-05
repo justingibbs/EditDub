@@ -54,8 +54,8 @@ from semantic_router.encoders import OpenAIEncoder
 
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 
-# Test
-rl("should I buy ON whey or MP?")
+# # Test
+#rl("should I buy ON whey or MP?")
 
 # Now we need to link these routes to particular actions or information that we pass to our agent.
 from datetime import datetime
@@ -154,8 +154,31 @@ agent(query)
 
 ## My code
 
-# Call the agent with a query and capture the response
-response = agent(sr_query)
+# # Call the agent with a query and capture the response
+# response = agent(sr_query)
 
-# Print the response to the command line
-print(response)
+# # Print the response to the command line
+# print(response)
+
+# Below code not working
+# import streamlit as st
+# # Streamlit interface
+# st.title('Semantic Router Interface')
+# user_input = st.text_input("Enter your query:")
+# if st.button('Submit'):
+#     response = semantic_layer(query)
+#     st.text(f"Response: {response}")
+
+import streamlit as st
+
+def app():
+    st.title('Semantic Router Interface')
+    user_input = st.text_input("Enter your query:")
+    if st.button('Submit'):
+        query = user_input
+        sr_query = semantic_layer(query)
+        response = agent(sr_query)
+        st.text(f"Response: {response}")
+
+if __name__ == "__main__":
+    app()
