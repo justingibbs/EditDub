@@ -1,5 +1,15 @@
 from semantic_router import Route
+from semantic_router import RouteLayer
+from semantic_router.encoders import OpenAIEncoder
+from langchain.agents import AgentType, initialize_agent
+from langchain.memory import ConversationBufferWindowMemory
+from langchain_openai import ChatOpenAI
+from datetime import datetime
+import os
+from dotenv import load_dotenv
+import streamlit as st
 
+# Define routes
 time_route = Route(
     name="get_time",
     utterances=[
@@ -41,26 +51,14 @@ product_route = Route(
 
 routes = [time_route, supplement_route, business_route, product_route]
 
-import os
-from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
-
-# Retrieve the API key from environment variables
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-from semantic_router import RouteLayer
-from semantic_router.encoders import OpenAIEncoder
-
+# Initialize the route layer
 rl = RouteLayer(encoder=OpenAIEncoder(), routes=routes)
 
-# # Test
-#rl("should I buy ON whey or MP?")
-
-# Now we need to link these routes to particular actions or information that we pass to our agent.
-from datetime import datetime
-
-
+# Define response functions (particular actions or information that we pass to the agent)
 def get_time():
     now = datetime.now()
     return (
@@ -106,17 +104,11 @@ def semantic_layer(query: str):
         pass
     return query
 
+# Not sure why the following two lines are needed
 query = "should I buy ON whey or MP?"
 sr_query = semantic_layer(query)
-sr_query
 
 # Initialize a conversational LangChain agent.
-from langchain.agents import AgentType, initialize_agent
-from langchain_openai import ChatOpenAI
-# Older line asked to depricate
-# from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationBufferWindowMemory
-
 llm = ChatOpenAI(model="gpt-3.5-turbo-1106")
 
 memory1 = ConversationBufferWindowMemory(
@@ -154,29 +146,14 @@ agent(query)
 
 ## My code
 
-# # Call the agent with a query and capture the response
-# response = agent(sr_query)
-
-# # Print the response to the command line
-# print(response)
-
-# Below code not working
-# import streamlit as st
-# # Streamlit interface
-# st.title('Semantic Router Interface')
-# user_input = st.text_input("Enter your query:")
-# if st.button('Submit'):
-#     response = semantic_layer(query)
-#     st.text(f"Response: {response}")
-
-import streamlit as st
-
+# Streamlit app
 def app():
     st.title('Semantic Router Interface')
     user_input = st.text_input("Enter your query:")
     if st.button('Submit'):
         query = user_input
-        sr_query = semantic_layer(query)
+       # sr_query = semantic_layer(query)
+        sr_query = semantic_layer(user_input)
         response = agent(sr_query)
         st.text(f"Response: {response}")
 
